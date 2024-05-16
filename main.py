@@ -7,7 +7,7 @@ from starlette.middleware.cors import CORSMiddleware
 import prompt
 
 import transformers
-import 
+from torch import bfloat16
 
 from PIL import Image
 
@@ -50,15 +50,19 @@ sys_random = SystemRandom()
 pytesseract.pytesseract.tesseract_cmd = r"C:\Users\Admin\AppData\Local\Programs\Tesseract-OCR\tesseract.exe"
 
 # TODO: Move token to docker secrets in prod.
-# mlClient = InferenceClient("meta-llama/Meta-Llama-3-8B-Instruct", token="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")
 
 async def __mltest(request):
     model_id = "meta-llama/Meta-Llama-3-8B-Instruct"
     pipeline = transformers.pipeline(
         "text-generation",
         model=model_id,
-        model_kwargs={"torch_dtype": }
+        model_kwargs={"torch_dtype": bfloat16},
+        device_map="auto"
     )
+
+    messages = [
+        {}
+    ]
 
 async def __save_temp(request):
     file_id = sys_random.randbytes(16).hex()
